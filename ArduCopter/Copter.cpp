@@ -86,7 +86,7 @@ const AP_HAL::HAL& hal = AP_HAL::get_HAL();
 /*
   scheduler table for fast CPUs - all regular tasks apart from the fast_loop()
   should be listed here, along with how often they should be called (in hz)
-  and the maximum time they are expected to take (in microseconds)
+  and the maximum time they are expected to take (in microseconds)           
  */
 const AP_Scheduler::Task Copter::scheduler_tasks[] = {
     SCHED_TASK(rc_loop,              100,    130),

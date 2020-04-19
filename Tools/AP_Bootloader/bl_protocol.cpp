@@ -152,7 +152,7 @@ static void sys_tick_handler(void *ctx)
 
     if ((led_state == LED_BLINK) && (timer[TIMER_LED] == 0)) {
         led_toggle(LED_BOOTLOADER);
-        timer[TIMER_LED] = 50;
+        timer[TIMER_LED] = 500;
     }
 }
 
