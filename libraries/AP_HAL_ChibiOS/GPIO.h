@@ -25,10 +25,16 @@
 #ifndef HAL_GPIO_LED_OFF
 #define HAL_GPIO_LED_OFF 1
 #endif
-
+/*
+define GPIO class bases on HAL::GPIO class
+*/
 class ChibiOS::GPIO : public AP_HAL::GPIO {
 public:
     GPIO();
+    /*
+        The init() method from this Class will override the init() method defined in AP_HAL::GPIO
+        as we know, AP_HAL::GPIO's init() method is defined as pure virtual function, it means it must be implemented in the AP_HAL::GPIO's child classes
+    */
     void    init() override;
     void    pinMode(uint8_t pin, uint8_t output) override;
     uint8_t read(uint8_t pin) override;
