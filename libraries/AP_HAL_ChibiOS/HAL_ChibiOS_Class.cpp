@@ -187,7 +187,7 @@ static void main_loop()
     peripheral_power_enable();
 
     hal.uartA->begin(115200);
-
+    
 #ifdef HAL_SPI_CHECK_CLOCK_FREQ
     // optional test of SPI clock frequencies
     ChibiOS::SPIDevice::test_clock_freq();
@@ -257,7 +257,7 @@ static void main_loop()
 
     while (true) {
         g_callbacks->loop();
-
+        hal.uartA->printf("Hello this is the program main loop 22.4.2020!\n\r");
         /*
           give up 50 microseconds of time if the INS loop hasn't
           called delay_microseconds_boost(), to ensure low priority

@@ -234,7 +234,6 @@ void Copter::fast_loop()
     motors_output();
 
     // run EKF state estimator (expensive)
-    // --------------------
     read_AHRS();
 
 #if FRAME_CONFIG == HELI_FRAME
@@ -607,12 +606,16 @@ void Copter::publish_osd_info()
 
 /*
   constructor for main Copter class
+  define the default objects and variables for Copter's object 
  */
 Copter::Copter(void)
     : logger(g.log_bitmask),
     flight_modes(&g.flight_mode1),
+    /*
+        define default flight mode when turn on
+    */
     control_mode(Mode::Number::STABILIZE),
-    simple_cos_yaw(1.0f),
+  //  simple_cos_yaw(1.0f),
     super_simple_cos_yaw(1.0),
     land_accel_ef_filter(LAND_DETECTOR_ACCEL_LPF_CUTOFF),
     rc_throttle_control_in_filter(1.0f),
@@ -623,6 +626,7 @@ Copter::Copter(void)
     // init sensor error logging flags
     sensor_health.baro = true;
     sensor_health.compass = true;
+    simple_cos_yaw = 1.0f;
 }
 
 Copter copter;

@@ -230,7 +230,9 @@ public:
     friend class ModeThrow;
     friend class ModeZigZag;
     friend class ModeAutorotate;
-
+    /*
+        Copter constructor prototype
+    */
     Copter(void);
 
 private:

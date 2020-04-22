@@ -47,7 +47,7 @@ static void test_uart(AP_HAL::UARTDriver *uart, const char *name)
         // that UART doesn't exist on this platform
         return;
     }
-    uart->printf("Hello on UART %s at %.3f seconds\n",
+    uart->printf("My name is Thong, Hello on UART %s at %.3f seconds\n",
                  name, (double)(AP_HAL::millis() * 0.001f));
 }
 

@@ -21,6 +21,9 @@ class AP_Param;
 
 class AP_HAL::HAL {
 public:
+    /*
+    C++ Member initializer lists
+    */
     HAL(AP_HAL::UARTDriver* _uartA, // console
         AP_HAL::UARTDriver* _uartB, // 1st GPS
         AP_HAL::UARTDriver* _uartC, // telem1

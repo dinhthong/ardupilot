@@ -1,5 +1,8 @@
 #pragma once
-
+/*
+    Define namespace ChibiOS which has following classes, the actual declaration and implementation of each class will
+    be done in corresponding module file.
+*/
 namespace ChibiOS {
     class AnalogIn;
     class AnalogSource;
