@@ -124,6 +124,11 @@ HAL_ChibiOS::HAL_ChibiOS() :
         &spiDeviceManager,
         &analogIn,
         &storageDriver,
+        /*
+            thong nguyen
+            Default constructor for console port is uartA.
+            This's why in example sketch we can use both hal.console->printf() = uartA->printf()
+        */
         &uartADriver,
         &gpioDriver,
         &rcinDriver,
@@ -257,7 +262,12 @@ static void main_loop()
 
     while (true) {
         g_callbacks->loop();
-        hal.uartA->printf("Hello this is the program main loop 22.4.2020!\n\r");
+        /*
+            thongnguyen
+            This demonstrates how we can use the hal to access console port
+        */
+        //hal.uartA->printf("Hello this is the program main loop 22.4.2020!\n\r");
+        //hal.uartA->printf("It's called in HAL_ChibiOS_Class.cpp\n\r");
         /*
           give up 50 microseconds of time if the INS loop hasn't
           called delay_microseconds_boost(), to ensure low priority
