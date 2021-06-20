@@ -630,6 +630,10 @@ Copter::Copter(void)
 }
 
 Copter copter;
+/*
+    Use & to declare a reference to a type
+    vehicle and copter will point to the same memory location.
+*/
 AP_Vehicle& vehicle = copter;
 
 AP_HAL_MAIN_CALLBACKS(&copter);

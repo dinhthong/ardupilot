@@ -56,7 +56,7 @@ extern const AP_HAL::HAL& hal;
 #define SAMPLE_UNIT 1
 
 #define GYRO_INIT_MAX_DIFF_DPS 0.1f
-
+#define HAL_INS_DEFAULT HAL_INS_MPU60XX_SPI
 // Class level parameters
 const AP_Param::GroupInfo AP_InertialSensor::var_info[] = {
     // 0 was PRODUCT_ID

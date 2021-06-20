@@ -38,6 +38,10 @@ void loop();
 // to be called only once on boot for initializing objects
 void setup()
 {
+    // terminate program if console fails to initialize
+    if (!hal.console->is_initialized()) {
+        return;
+    }
     hal.console->printf("Barometer library test\n");
 
     board_config.init();
@@ -55,16 +59,11 @@ void setup()
 // loop
 void loop()
 {
-    // terminate program if console fails to initialize
-    if (!hal.console->is_initialized()) {
-        return;
-    }
-
     // run accumulate() at 50Hz and update() at 10Hz
     if ((AP_HAL::micros() - timer) > 20 * 1000UL) {
         timer = AP_HAL::micros();
         barometer.accumulate();
-        if (counter++ < 5) {
+        if (counter++ < 25) {
             return;
         }
         counter = 0;

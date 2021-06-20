@@ -2,10 +2,13 @@
 # for stm32f407vg bootloader
 
 # MCU class and specific type
-MCU STM32F4xx STM32F407xx
+MCU STM32F4xx STM32F405xx
+
+#airbotf4
+#HAL_CHIBIOS_ARCH_F405 1
 
 # board ID for firmware load
-APJ_BOARD_ID 100
+APJ_BOARD_ID 101
 
 # crystal frequency
 OSCILLATOR_HZ 8000000
@@ -32,12 +35,10 @@ FLASH_BOOTLOADER_LOAD_KB 64
 STM32_VDD 330U
 
 # order of UARTs
-UART_ORDER OTG1
-# define USG-OTG port (on stm32f407vg discovery)
-# this port is used for loading the firmware through the bootloader + Mission Planner
-# also it's hal->console port
-PA11 OTG_FS_DM OTG1
-PA12 OTG_FS_DP OTG1
+UART_ORDER USART1
+# main port, for telem1
+PA9 USART1_TX USART1
+PA10 USART1_RX USART1
 
 define HAL_USE_EMPTY_STORAGE 1
 define HAL_STORAGE_SIZE 15360
