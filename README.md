@@ -28,3 +28,11 @@ https://ardupilot.org/dev/docs/porting.html#step-4-upload-an-ardupilot-compatibl
 ./waf bootloader
 </code></pre>
 After building the bootloader, load it though STM32 ST-Link Utility
+
+# Understand how flight mode changes
+- Mode change is commanded by many sources: from user RC input, GCS, or maybe system failsafe, condition to change flight mode in code...
+- The RC_Chanel for each vehicle is implemeted differently, that's why we have RC_Channel_Copter inherits from RC_channel
+## Explanation for RC input:
+- The Copter::rc_loop() reads the current RC input (at 100Hz)
+- We have many rc channels, RC_Channel::read_mode_switch() reads the mode switch , and calls 'void RC_Channel::read_mode_switch()' -> void RC_Channel_Copter::mode_switch_changed() -> copter.set_mode(). 
++ set_mode(new_mode, reason) checks if the switch conditions are meet and switch to the new flight mode.

@@ -249,7 +249,10 @@ bool Copter::set_mode(Mode::Number mode, ModeReason reason)
         AP::logger().Write_Error(LogErrorSubsystem::FLIGHT_MODE, LogErrorCode(mode));
         return false;
     }
-
+    /*
+        thong
+        Perform init for the new flight mode
+    */
     if (!new_flightmode->init(ignore_checks)) {
         gcs().send_text(MAV_SEVERITY_WARNING,"Flight mode change failed");
         AP::logger().Write_Error(LogErrorSubsystem::FLIGHT_MODE, LogErrorCode(mode));

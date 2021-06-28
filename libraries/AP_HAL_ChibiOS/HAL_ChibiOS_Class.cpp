@@ -285,7 +285,9 @@ static void main_loop()
     }
     thread_running = false;
 }
-
+/*
+    callbacks = 
+*/
 void HAL_ChibiOS::run(int argc, char * const argv[], Callbacks* callbacks) const
 {
     /*
