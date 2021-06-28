@@ -27,9 +27,6 @@ pincount = {
 
 # MCU parameters
 mcu = {
-    # location of MCU serial number
-    'UDID_START' : 0x1FF0F420,
-
     # ram map, as list of (address, size-kb, flags)
     # flags of 1 means DMA-capable
     # flags of 2 means faster memory for CPU intensive work
@@ -39,6 +36,8 @@ mcu = {
         (0x20000000,  64, 1), # DTCM, DMA safe
         (0x20010000,  64, 2), # DTCM, 2nd half, used as fast memory. This lowers memory contention in the EKF code
     ],
+
+    'EXPECTED_CLOCK' : 216000000,
 
     # this MCU has M7 instructions and hardware double precision
     'CORTEX'    : 'cortex-m7',

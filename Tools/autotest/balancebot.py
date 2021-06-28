@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 
-# Drive balancebot in SITL
+'''
+Drive a BalanceBot in SITL
+
+AP_FLAKE8_CLEAN
+
+'''
+
 from __future__ import print_function
 
 import os
 
-from apmrover2 import AutoTestRover
+from rover import AutoTestRover
 from common import AutoTest
 
 from common import NotAchievedException
@@ -13,13 +19,15 @@ from common import NotAchievedException
 # get location of scripts
 testdir = os.path.dirname(os.path.realpath(__file__))
 
+
 def log_name(self):
     return "BalanceBot"
+
 
 class AutoTestBalanceBot(AutoTestRover):
 
     def vehicleinfo_key(self):
-        return "APMrover2"
+        return "Rover"
 
     def init(self):
         if self.frame is None:
@@ -48,7 +56,7 @@ class AutoTestBalanceBot(AutoTestRover):
         # indefinitely at ~1m/s, hence we set to Acro
         self.set_parameter("MIS_DONE_BEHAVE", 2)
         super(AutoTestBalanceBot, self).drive_rtl_mission()
-    
+
     def test_wheelencoders(self):
         '''make sure wheel encoders are generally working'''
         ex = None
@@ -107,7 +115,7 @@ inherit Rover's tests!'''
 
             ("DriveMission",
              "Drive Mission %s" % "balancebot1.txt",
-             lambda: self.drive_mission("balancebot1.txt")),
+             lambda: self.drive_mission("balancebot1.txt", strict=False)),
 
             ("TestWheelEncoder",
              "Test wheel encoders",
@@ -123,13 +131,11 @@ inherit Rover's tests!'''
              "Test ServoRelayEvents",
              self.test_servorelayevents),
 
-            ("DownLoadLogs", "Download logs", lambda:
-             self.log_download(
-                 self.buildlogs_path("APMrover2-log.bin"),
-                 upload_logs=len(self.fail_list) > 0)),
+            ("LogUpload",
+             "Upload logs",
+             self.log_upload),
         ])
         return ret
 
     def default_mode(self):
         return 'MANUAL'
-

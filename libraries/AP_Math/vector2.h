@@ -29,6 +29,10 @@
 ****************************************/
 #pragma once
 
+#ifndef MATH_CHECK_INDEXES
+#define MATH_CHECK_INDEXES 0
+#endif
+
 #include <cmath>
 #include <AP_Common/AP_Common.h>
 
@@ -46,12 +50,6 @@ struct Vector2
     constexpr Vector2<T>(const T x0, const T y0)
         : x(x0)
         , y(y0) {}
-
-    // function call operator
-    void operator ()(const T x0, const T y0)
-    {
-        x= x0; y= y0;
-    }
 
     // test for equality
     bool operator ==(const Vector2<T> &v) const;
@@ -140,6 +138,9 @@ struct Vector2
     // gets the length of this vector
     float length(void) const;
 
+    // limit vector to a given length. returns true if vector was limited
+    bool limit_length(float max_length);
+
     // normalizes this vector
     void normalize();
 
@@ -158,6 +159,19 @@ struct Vector2
     // adjust position by a given bearing (in degrees) and distance
     void offset_bearing(float bearing, float distance);
 
+    // rotate vector by angle in radians
+    void rotate(float angle_rad);
+
+    /*
+      conversion to/from double
+     */
+    Vector2<float> tofloat() const {
+        return Vector2<float>{float(x),float(y)};
+    }
+    Vector2<double> todouble() const {
+        return Vector2<double>{x,y};
+    }
+    
     // given a position p1 and a velocity v1 produce a vector
     // perpendicular to v1 maximising distance from p1
     static Vector2<T> perpendicular(const Vector2<T> &pos_delta, const Vector2<T> &v1);
@@ -265,3 +279,4 @@ typedef Vector2<uint16_t>       Vector2ui;
 typedef Vector2<int32_t>        Vector2l;
 typedef Vector2<uint32_t>       Vector2ul;
 typedef Vector2<float>          Vector2f;
+typedef Vector2<double>          Vector2d;

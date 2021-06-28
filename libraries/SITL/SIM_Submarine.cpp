@@ -62,6 +62,7 @@ Submarine::Submarine(const char *frame_str) :
         thrusters = vectored_6dof_thrusters;
         n_thrusters = 8;
     }
+    lock_step_scheduled = true;
 }
 
 // calculate rotational and linear accelerations
@@ -137,7 +138,7 @@ void Submarine::calculate_buoyancy_torque(Vector3f &torque)
  * @param position
  * @return float
  */
-float Submarine::calculate_sea_floor_depth(const Vector3f &/*position*/)
+float Submarine::calculate_sea_floor_depth(const Vector3d &/*position*/)
 {
     return 50;
 }
@@ -151,7 +152,7 @@ float Submarine::calculate_sea_floor_depth(const Vector3f &/*position*/)
  * $ F_D = rho * v^2 * A * C_D / 2 $
  * rho = water density (kg/m^3), V = velocity (m/s), A = area (m^2), C_D = drag_coefficient
  */
-void Submarine::calculate_drag_force(const Vector3f &velocity, const Vector3f &drag_coefficient, Vector3f &force)
+void Submarine::calculate_drag_force(const Vector3f &velocity, const Vector3f &drag_coefficient, Vector3f &force) const
 {
     /**
      * @brief It's necessary to keep the velocity orientation from the body frame.
@@ -182,7 +183,7 @@ void Submarine::calculate_drag_force(const Vector3f &velocity, const Vector3f &d
  * @param angular_velocity Body frame velocity of fluid
  * @param drag_coefficient Rotational drag coefficient of body
  */
-void Submarine::calculate_angular_drag_torque(const Vector3f &angular_velocity, const Vector3f &drag_coefficient, Vector3f &torque)
+void Submarine::calculate_angular_drag_torque(const Vector3f &angular_velocity, const Vector3f &drag_coefficient, Vector3f &torque) const
 {
      /**
      * @brief It's necessary to keep the velocity orientation from the body frame.
@@ -215,11 +216,11 @@ float Submarine::calculate_buoyancy_acceleration()
 
     // Completely below water level
     if (below_water_level > frame_property.height/2) {
-        return frame_property.buoyancy_acceleration;
+        return GRAVITY_MSS + sitl->buoyancy / frame_property.mass;
     }
 
     // bouyant force is proportional to fraction of height in water
-    return frame_property.buoyancy_acceleration * below_water_level/frame_property.height;
+    return GRAVITY_MSS + (sitl->buoyancy * below_water_level/frame_property.height) / frame_property.mass;
 };
 
 /*
@@ -235,6 +236,7 @@ void Submarine::update(const struct sitl_input &input)
     calculate_forces(input, rot_accel, accel_body);
 
     update_dynamics(rot_accel);
+    update_external_payload(input);
 
     // update lat/lon/altitude
     update_position();

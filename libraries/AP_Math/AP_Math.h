@@ -18,6 +18,7 @@
 #include "vector3.h"
 #include "spline5.h"
 #include "location.h"
+#include "control.h"
 
 // define AP_Param types AP_Vector3f and Ap_Matrix3f
 AP_PARAMDEFV(Vector3f, Vector3f, AP_PARAM_VECTOR3F);
@@ -81,17 +82,17 @@ float safe_asin(const T v);
 template <typename T>
 float safe_sqrt(const T v);
 
-// invOut is an inverted 4x4 matrix when returns true, otherwise matrix is Singular
-bool inverse3x3(float m[], float invOut[]) WARN_IF_UNUSED;
-
-// invOut is an inverted 3x3 matrix when returns true, otherwise matrix is Singular
-bool inverse4x4(float m[],float invOut[]) WARN_IF_UNUSED;
-
 // matrix multiplication of two NxN matrices
-float *mat_mul(float *A, float *B, uint8_t n);
+template <typename T>
+void mat_mul(const T *A, const T *B, T *C, uint16_t n);
 
-// matrix algebra
-bool inverse(float x[], float y[], uint16_t dim) WARN_IF_UNUSED;
+// matrix inverse
+template <typename T>
+bool mat_inverse(const T *x, T *y, uint16_t dim) WARN_IF_UNUSED;
+
+// matrix identity
+template <typename T>
+void mat_identity(T *x, uint16_t dim);
 
 /*
  * Constrain an angle to be within the range: -180 to 180 degrees. The second
@@ -144,10 +145,10 @@ float wrap_2PI(const T radian);
 template <typename T>
 T constrain_value(const T amt, const T low, const T high);
 
-inline float constrain_float(const float amt, const float low, const float high)
-{
-    return constrain_value(amt, low, high);
-}
+template <typename T>
+T constrain_value_line(const T amt, const T low, const T high, uint32_t line);
+
+#define constrain_float(amt, low, high) constrain_value_line(float(amt), float(low), float(high), uint32_t(__LINE__))
 
 inline int16_t constrain_int16(const int16_t amt, const int16_t low, const int16_t high)
 {
@@ -247,6 +248,9 @@ inline constexpr uint32_t usec_to_hz(uint32_t usec)
 
 /*
   linear interpolation based on a variable in a range
+  return value will be in the range [var_low,var_high]
+
+  Either polarity is supported, so var_low can be higher than var_high
  */
 float linear_interpolate(float low_output, float high_output,
                          float var_value,
@@ -277,8 +281,32 @@ Vector3f rand_vec3f(void);
 // return true if two rotations are equal
 bool rotation_equal(enum Rotation r1, enum Rotation r2) WARN_IF_UNUSED;
 
+/*
+ * return a velocity correction (in m/s in NED) for a sensor's position given it's position offsets
+ * this correction should be added to the sensor NED measurement
+ * sensor_offset_bf is in meters in body frame (Foward, Right, Down)
+ * rot_ef_to_bf is a rotation matrix to rotate from earth-frame (NED) to body frame
+ * angular_rate is rad/sec
+ */
+Vector3f get_vel_correction_for_sensor_offset(const Vector3f &sensor_offset_bf, const Matrix3f &rot_ef_to_bf, const Vector3f &angular_rate);
+
+/*
+  calculate a low pass filter alpha value
+ */
+float calc_lowpass_alpha_dt(float dt, float cutoff_freq);
+
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
 // fill an array of float with NaN, used to invalidate memory in SITL
 void fill_nanf(float *f, uint16_t count);
 #endif
 
+// from https://embeddedartistry.com/blog/2018/07/12/simple-fixed-point-conversion-in-c/
+// Convert to/from 16-bit fixed-point and float
+float fixed2float(const uint16_t input, const uint8_t fractional_bits = 8);
+uint16_t float2fixed(const float input, const uint8_t fractional_bits = 8);
+
+/*
+  calculate turn rate in deg/sec given a bank angle and airspeed for a
+  fixed wing aircraft
+ */
+float fixedwing_turn_rate(float bank_angle_deg, float airspeed);

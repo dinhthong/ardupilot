@@ -218,7 +218,9 @@ void AP_Hott_Telem::send_GPS(void)
         uint8_t gps_time_hs;          //#36 UTC time 0.01s units
         int16_t vel_east;             //#37 velocity north mm/s
         uint8_t horiz_acc;            //#39 horizontal accuracy
-        char free_char[3];            //#40 displayed to right of home
+        uint8_t free_char1;           //#40 displayed to right of home
+        uint8_t free_char2;           //#41
+        uint8_t free_char3;           //#42 GPS fix character. display, 'D' = DGPS, '2' = 2D, '3' = 3D, '-' = no fix
         uint8_t version = 1;          //#43 0: GPS Graupner #33600, 1: ArduPilot
         uint8_t stop_byte = 0x7d;     //#44
     } msg {};
@@ -273,18 +275,8 @@ void AP_Hott_Telem::send_GPS(void)
     msg.vel_east = vel.y * 1000 + 0.5;
     msg.altitude = uint16_t(500.5 + alt);
 
-    switch (gps.status()) {
-    case AP_GPS::NO_GPS:
-    case AP_GPS::NO_FIX:
-        msg.gps_fix_char = '-';
-        break;
-    case AP_GPS::GPS_OK_FIX_2D:
-        msg.gps_fix_char = '2';
-        break;
-    default:
-        msg.gps_fix_char = '3';
-        break;
-    }
+    msg.gps_fix_char = gps.status_onechar();
+    msg.free_char3 = msg.gps_fix_char;
 
     msg.home_direction = degrees(atan2f(home_vec.y, home_vec.x)) * 0.5 + 0.5;
 
@@ -416,10 +408,7 @@ void AP_Hott_Telem::loop(void)
             continue;
         }
         if (n > 2) {
-            while (n--) {
-                uart->read();
-                hal.scheduler->delay_microseconds(100);
-            }
+            uart->discard_input();
             continue;
         }
 

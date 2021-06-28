@@ -32,7 +32,7 @@ public:
     /// constructors
     Location();
     Location(int32_t latitude, int32_t longitude, int32_t alt_in_cm, AltFrame frame);
-    Location(const Vector3f &ekf_offset_neu);
+    Location(const Vector3f &ekf_offset_neu, AltFrame frame);
 
     static void set_terrain(AP_Terrain* terrain) { _terrain = terrain; }
 
@@ -64,15 +64,20 @@ public:
 
     // return the distance in meters in North/East/Down plane as a N/E/D vector to loc2
     Vector3f get_distance_NED(const Location &loc2) const;
+    Vector3d get_distance_NED_double(const Location &loc2) const;
 
     // return the distance in meters in North/East plane as a N/E vector to loc2
     Vector2f get_distance_NE(const Location &loc2) const;
 
     // extrapolate latitude/longitude given distances (in meters) north and east
     void offset(float ofs_north, float ofs_east);
+    void offset_double(double ofs_north, double ofs_east);
 
     // extrapolate latitude/longitude given bearing and distance
-    void offset_bearing(float bearing, float distance);
+    void offset_bearing(float bearing_deg, float distance);
+    
+    // extrapolate latitude/longitude given bearing, pitch and distance
+    void offset_bearing_and_pitch(float bearing_deg, float pitch_deg, float distance);
 
     // longitude_scale - returns the scaler to compensate for
     // shrinking longitude as you move north or south from the equator
@@ -116,6 +121,12 @@ public:
 
     bool initialised() const { return (lat !=0 || lng != 0 || alt != 0); }
 
+    // wrap longitude at -180e7 to 180e7
+    static int32_t wrap_longitude(int32_t lon);
+
+    // get lon1-lon2, wrapping at -180e7 to 180e7
+    static int32_t diff_longitude(int32_t lon1, int32_t lon2);
+    
 private:
     static AP_Terrain *_terrain;
 

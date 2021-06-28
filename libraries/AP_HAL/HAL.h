@@ -14,9 +14,7 @@ class AP_Param;
 #include "system.h"
 #include "OpticalFlow.h"
 #include "DSP.h"
-#if HAL_WITH_UAVCAN
-#include "CAN.h"
-#endif
+#include "CANIface.h"
 
 
 class AP_HAL::HAL {
@@ -32,6 +30,7 @@ public:
         AP_HAL::UARTDriver* _uartF, // extra1
         AP_HAL::UARTDriver* _uartG, // extra2
         AP_HAL::UARTDriver* _uartH, // extra3
+        AP_HAL::UARTDriver* _uartI, // extra4
         AP_HAL::I2CDeviceManager* _i2c_mgr,
         AP_HAL::SPIDeviceManager* _spi,
         AP_HAL::AnalogIn*   _analogin,
@@ -45,10 +44,10 @@ public:
         AP_HAL::OpticalFlow*_opticalflow,
         AP_HAL::Flash*      _flash,
         AP_HAL::DSP*        _dsp,
-#if HAL_WITH_UAVCAN
-        AP_HAL::CANManager* _can_mgr[MAX_NUMBER_OF_CAN_DRIVERS])
+#if HAL_NUM_CAN_IFACES > 0
+        AP_HAL::CANIface* _can_ifaces[HAL_NUM_CAN_IFACES])
 #else
-        AP_HAL::CANManager** _can_mgr)
+        AP_HAL::CANIface** _can_ifaces)
 #endif
         :
         uartA(_uartA),
@@ -59,6 +58,7 @@ public:
         uartF(_uartF),
         uartG(_uartG),
         uartH(_uartH),
+        uartI(_uartI),
         i2c_mgr(_i2c_mgr),
         spi(_spi),
         analogin(_analogin),
@@ -73,13 +73,13 @@ public:
         flash(_flash),
         dsp(_dsp)
     {
-#if HAL_WITH_UAVCAN
-        if (_can_mgr == nullptr) {
-            for (uint8_t i = 0; i < MAX_NUMBER_OF_CAN_DRIVERS; i++)
-                can_mgr[i] = nullptr;
+#if HAL_NUM_CAN_IFACES > 0
+        if (_can_ifaces == nullptr) {
+            for (uint8_t i = 0; i < HAL_NUM_CAN_IFACES; i++)
+                can[i] = nullptr;
         } else {
-            for (uint8_t i = 0; i < MAX_NUMBER_OF_CAN_DRIVERS; i++)
-                can_mgr[i] = _can_mgr[i];
+            for (uint8_t i = 0; i < HAL_NUM_CAN_IFACES; i++)
+                can[i] = _can_ifaces[i];
         }
 #endif
 
@@ -104,6 +104,8 @@ public:
 
     virtual void run(int argc, char * const argv[], Callbacks* callbacks) const = 0;
 
+private:
+    // the uartX ports must be contiguous in ram for the serial() method to work
     AP_HAL::UARTDriver* uartA;
     AP_HAL::UARTDriver* uartB;
     AP_HAL::UARTDriver* uartC;
@@ -112,6 +114,9 @@ public:
     AP_HAL::UARTDriver* uartF;
     AP_HAL::UARTDriver* uartG;
     AP_HAL::UARTDriver* uartH;
+    AP_HAL::UARTDriver* uartI;
+
+public:
     AP_HAL::I2CDeviceManager* i2c_mgr;
     AP_HAL::SPIDeviceManager* spi;
     AP_HAL::AnalogIn*   analogin;
@@ -125,9 +130,14 @@ public:
     AP_HAL::OpticalFlow *opticalflow;
     AP_HAL::Flash       *flash;
     AP_HAL::DSP         *dsp;
-#if HAL_WITH_UAVCAN
-    AP_HAL::CANManager* can_mgr[MAX_NUMBER_OF_CAN_DRIVERS];
+#if HAL_NUM_CAN_IFACES > 0
+    AP_HAL::CANIface* can[HAL_NUM_CAN_IFACES];
 #else
-    AP_HAL::CANManager** can_mgr;
+    AP_HAL::CANIface** can;
 #endif
+
+    // access to serial ports using SERIALn_ numbering
+    UARTDriver* serial(uint8_t sernum) const;
+
+    static constexpr uint8_t num_serial = 9;
 };

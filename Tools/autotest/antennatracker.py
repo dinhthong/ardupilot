@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+'''
+Test AntennaTracker vehicle in SITL
+
+AP_FLAKE8_CLEAN
+
+'''
+
 from __future__ import print_function
 
 import math
@@ -16,13 +23,18 @@ from common import NotAchievedException
 testdir = os.path.dirname(os.path.realpath(__file__))
 SITL_START_LOCATION = mavutil.location(-27.274439, 151.290064, 343, 8.7)
 
+
 class AutoTestTracker(AutoTest):
 
     def log_name(self):
         return "AntennaTracker"
 
+    def default_speedup(self):
+        '''Tracker seems to be race-free'''
+        return 100
+
     def test_filepath(self):
-         return os.path.realpath(__file__)
+        return os.path.realpath(__file__)
 
     def sitl_start_location(self):
         return SITL_START_LOCATION
@@ -35,6 +47,9 @@ class AutoTestTracker(AutoTest):
 
     def default_frame(self):
         return "tracker"
+
+    def set_current_test_name(self, name):
+        self.current_test_name_directory = "AntennaTracker_Tests/" + name + "/"
 
     def apply_defaultfile_parameters(self):
         # tracker doesn't have a default parameters file
@@ -85,7 +100,12 @@ class AutoTestTracker(AutoTest):
                 self.progress("Achieved attitude")
                 break
 
+    def reboot_sitl(self, *args, **kwargs):
+        self.disarm_vehicle()
+        super(AutoTestTracker, self).reboot_sitl(*args, **kwargs)
+
     def GUIDED(self):
+        self.reboot_sitl() # temporary hack around control issues
         self.change_mode(4) # "GUIDED"
         self.achieve_attitude(desyaw=10, despitch=30)
         self.achieve_attitude(desyaw=0, despitch=0)
@@ -95,7 +115,7 @@ class AutoTestTracker(AutoTest):
         self.change_mode(0) # "MANUAL"
         for chan in 1, 2:
             for pwm in 1200, 1600, 1367:
-                self.set_rc(chan, pwm);
+                self.set_rc(chan, pwm)
                 self.wait_servo_channel_value(chan, pwm)
 
     def SERVOTEST(self):
@@ -143,7 +163,7 @@ class AutoTestTracker(AutoTest):
     def disabled_tests(self):
         return {
             "ArmFeatures": "See https://github.com/ArduPilot/ardupilot/issues/10652",
-            "Parameters": "reboot does not work",
+            "CPUFailsafe": " tracker doesn't have a CPU failsafe",
         }
 
     def tests(self):

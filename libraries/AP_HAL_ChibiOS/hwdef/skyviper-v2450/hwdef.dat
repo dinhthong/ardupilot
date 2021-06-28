@@ -27,7 +27,7 @@ undef SDIO
 undef HAL_BOARD_LOG_DIRECTORY
 undef HAL_BOARD_TERRAIN_DIRECTORY
 
-UART_ORDER OTG1 UART4 USART2
+SERIAL_ORDER OTG1 USART2 EMPTY UART4
 
 # enable AP_Radio support
 define HAL_RCINPUT_WITH_AP_RADIO 1
@@ -64,3 +64,6 @@ env DEFAULT_PARAMETERS 'Tools/Frame_params/SkyViper-2450GPS/defaults.parm'
 
 # the web UI uses an abin file for firmware uploads
 env BUILD_ABIN True
+
+# Disable un-needed hardware drivers
+define HAL_WITH_ESC_TELEM 0
