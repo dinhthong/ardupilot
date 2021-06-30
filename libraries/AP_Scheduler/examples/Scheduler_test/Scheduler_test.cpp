@@ -57,7 +57,7 @@ void SchedTest::setup(void)
 
     board_config.init();
 
-    ins.init(scheduler.get_loop_rate_hz());
+    //ins.init(scheduler.get_loop_rate_hz());
 
     // initialise the scheduler
     scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks), (uint32_t)-1);
@@ -75,7 +75,7 @@ void SchedTest::loop(void)
 void SchedTest::ins_update(void)
 {
     ins_counter++;
-    ins.update();
+    //ins.update();
 }
 
 /*

@@ -1,0 +1,105 @@
+# hw definition file for processing by chibios_pins.py
+# for  hardware
+
+# MCU class and specific type
+MCU STM32F4xx STM32F405xx
+
+# board ID for firmware load
+APJ_BOARD_ID 402
+
+# crystal frequency
+OSCILLATOR_HZ 8000000
+
+define STM32_ST_USE_TIMER 5
+
+FLASH_SIZE_KB 1024
+
+# use USB for stdout, so no STDOUT_SERIAL
+# STDOUT_SERIAL SD3
+# STDOUT_BAUDRATE 57600
+
+# only one I2C bus
+I2C_ORDER I2C2
+
+# order of UARTs (and USB)
+SERIAL_ORDER USART1 USART3 
+
+# rcinput is PC6, which is the 3rd "PWM IN" pin (the yellow wire on a
+# revolution board)
+PC6 TIM8_CH1 TIM8 RCIN FLOAT LOW
+
+# analog pins
+#PC3 VDD_5V_SENS ADC1
+PC2 BATT_VOLTAGE_SENS ADC1 SCALE(1)
+#PC1 BATT_CURRENT_SENS ADC1 SCALE(1)
+#PC5 USB_SENSE ADC1
+
+# define default battery setup
+#define HAL_BATT_VOLT_PIN 12
+#define HAL_BATT_CURR_PIN 11
+#define HAL_BATT_VOLT_SCALE 10.1
+#define HAL_BATT_CURR_SCALE 17.0
+
+PA1 SBUS_INVERT OUTPUT LOW
+
+# LEDs
+PD12 LED_BLUE OUTPUT LOW GPIO(0)
+PD13 LED_YELLOW OUTPUT LOW GPIO(1) # optional
+PD14 LED_RED OUTPUT LOW GPIO(2)
+
+# flexi port, setup as GPS
+PD8 USART3_TX USART3
+PD9 USART3_RX USART3
+
+# main port, for telem1
+PA9 USART1_TX USART1
+PA10 USART1_RX USART1
+
+# spi bus for IMU
+PA5 SPI1_SCK SPI1
+PA6 SPI1_MISO SPI1
+PA7 SPI1_MOSI SPI1
+PA4 ICM20689_CS CS
+
+# only one I2C bus in normal config
+PB10 I2C2_SCL I2C2
+PB11 I2C2_SDA I2C2
+
+# PWM out pins
+PB6 TIM4_CH1 TIM4 PWM(1) GPIO(50)
+PB7 TIM4_CH2 TIM4 PWM(2) GPIO(51)
+PB8 TIM4_CH3 TIM4 PWM(3) GPIO(52)
+PB9 TIM4_CH4 TIM4 PWM(4) GPIO(53)
+PE9 TIM1_CH1 TIM1 PWM(5) GPIO(54)
+PE11 TIM1_CH2 TIM1 PWM(6) GPIO(55)
+# disable last two channels as conflicts with TIM8 for RCIN
+#PC8 TIM8_CH3 TIM8 PWM(7) GPIO(56)
+#PC9 TIM8_CH4 TIM8 PWM(8) GPIO(57)
+
+#PB7 DRDY_HMC5883 INPUT PULLUP
+
+define HAL_STORAGE_SIZE 15360
+define STORAGE_FLASH_PAGE 2
+
+# reserve 32k for bootloader and 32k for flash storage
+FLASH_RESERVE_START_KB 64
+
+# one IMU
+IMU Invensense SPI:mpu6000 ROTATION_YAW_180
+
+# one baro
+#BARO MS56XX I2C:0:0x77
+
+# also allow for probing of external barometers
+#define HAL_PROBE_EXTERNAL_I2C_BAROS
+
+# look for internal I2C compass
+#COMPASS HMC5843 I2C:0:0x1E false ROTATION_YAW_270
+
+# SPI devices
+SPIDEV mpu6000   SPI1 DEVID1 ICM20689_CS   MODE3 1*MHZ 4*MHZ 
+
+# 8 PWM available by default
+define BOARD_PWM_COUNT_DEFAULT 8
+define HAL_WITH_DSP FALSE
+
