@@ -17,7 +17,8 @@ const AP_HAL::HAL& hal = AP_HAL::get_HAL();
 
 AP_Logger logger;
 
-class SchedTest {
+class SchedTest
+{
 public:
     void setup();
     void loop();
@@ -31,7 +32,7 @@ private:
     uint32_t ins_counter;
     uint32_t count_5s;
     uint32_t count_1s;
-    
+
     static const AP_Scheduler::Task scheduler_tasks[];
 
     void ins_update(void);
@@ -76,7 +77,7 @@ const AP_Scheduler::Task SchedTest::scheduler_tasks[] = {
 
 void SchedTest::setup(void)
 {
-    
+
     board_config.init();
     ins.init(100);
 
@@ -110,7 +111,7 @@ void SchedTest::loop(void)
 }
 
 /*
-  update inertial sensor, reading data 
+  update inertial sensor, reading data
  */
 void SchedTest::ins_update(void)
 {
